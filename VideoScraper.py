@@ -28,6 +28,7 @@ def find_mp4_links(url):
     #find all .mp4 links and download them in the list of "a tags" with class "poplink"
     for apop_tag in apop_tags:
         if ".mp4" in apop_tag["href"]:
+            print ("Downloading:")
             print (apop_tag["href"]+ "\n")
             mp4_url = apop_tag["href"]
             urlsplit = mp4_url.split("/")
@@ -38,6 +39,7 @@ def find_mp4_links(url):
     continue_btns = page_soup.findAll("li",{"id":"continue_btn"})
     if len(continue_btns)>0:
         a_tags = continue_btns[0].findAll("a")
+        print ("Opening link:")
         print (a_tags[0]["href"]+ "\n")
         new_url = "https://ocw.mit.edu" + a_tags[0]["href"]
         find_mp4_links(new_url)
