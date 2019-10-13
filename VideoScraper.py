@@ -2,7 +2,7 @@
 """
 Created on Sun Jul 21 08:40:57 2019
 
-@author: admin
+@author: Chiu Sing Yan
 """
 
 import bs4
@@ -10,25 +10,28 @@ import urllib.request
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen as uReq
 
-my_url = "https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-004-computation-structures-spring-2017/index.htm"
+#change target url of lecture video page here
+start_url = "https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-004-computation-structures-spring-2017/c9/c9s2/"
 
+#Open the target url and parse the html using BeautifulSoup4's html parser
 def parseHTML(url):
     uClient = uReq(url)
     page_html = uClient.read()
     uClient.close()
     return soup(page_html, "html.parser")
 
+#Find all links with .mp4 and download the mp4 video, if "continue button" exists, open the link referenced by the button and repeat the process
 def find_mp4_links(url):
     page_soup = parseHTML(url)
     apop_tags = page_soup.findAll("a",{"class":"poplink"})
-    
-    #find all .mp4 links and download them in the list of a tags with class "poplink"
+
+    #find all .mp4 links and download them in the list of "a tags" with class "poplink"
     for apop_tag in apop_tags:
         if ".mp4" in apop_tag["href"]:
             print (apop_tag["href"]+ "\n")
             mp4_url = apop_tag["href"]
             urlsplit = mp4_url.split("/")
-            filename = urlsplit[len(urlsplit)-1]    
+            filename = urlsplit[len(urlsplit)-1]
             urllib.request.urlretrieve(apop_tag["href"], filename)
 
     #find continue button and "click" on it - retrieve the link and open the link, relaunch findmp4_links() with new url
@@ -42,17 +45,4 @@ def find_mp4_links(url):
         print ("All done!\n")
         return
 
-page_soup = parseHTML(my_url)
-containers = page_soup.findAll("div",{"class":"tlp_links"})
-start_url = "https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-004-computation-structures-spring-2017/c9/c9s2/"
-
 find_mp4_links(start_url)
-
-"""
-#find all links to section 2 (the section with videos) of each lecture
-for container in containers:
-    a_tags = container.findAll("a")
-    for a_tag in a_tags:
-        if "/courses" in a_tag["href"] and "s2" in a_tag["href"]:
-            print (a_tag["href"])
-"""
